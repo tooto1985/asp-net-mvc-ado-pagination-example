@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <p>
+        @Html.ActionLink("All","Index","Home")
+        @Html.ActionLink("Filter", "Filter", "Home")
+        @Html.ActionLink("Pagination", "Pagination", "Home")
+        @Html.ActionLink("Sorting", "Sorting", "Home")
+        @Html.ActionLink("Mixing", "Mixing", "Home")
+    </p>
+
+    @RenderBody()
+</body>
+</html>

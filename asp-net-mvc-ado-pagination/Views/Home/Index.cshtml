@@ -1,0 +1,83 @@
+﻿@using System.Data;
+@{
+    int colspan = ViewBag.Data.Columns.Count;
+    ViewBag.Title = "Index";
+}
+
+@if (ViewContext.RouteData.Values["action"].ToString().ToLower() == "filter" || ViewContext.RouteData.Values["action"].ToString().ToLower() == "mixing")
+{
+    <p>
+        @using (Html.BeginForm(ViewContext.RouteData.Values["action"].ToString(), "Home", FormMethod.Get))
+        {
+            <input type="text" name="q" value="@ViewBag.q" />
+            if (ViewContext.RouteData.Values["action"].ToString().ToLower() == "mixing")
+            {
+                <input type="hidden" name="size" value="@ViewBag.Size" />
+                <input type="hidden" name="num" value="@ViewBag.Num" />
+                <input type="hidden" name="orderby" value="@ViewBag.OrderBy" />
+            }
+            <input type="submit" value="搜尋" />
+        }
+    </p>
+}
+
+
+<table border="1">
+    <thead>
+        <tr>
+            @foreach (DataColumn dc in ViewBag.Data.Columns)
+            {
+                if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "sorting" && ViewContext.RouteData.Values["action"].ToString().ToLower() != "mixing")
+                {
+                    <th>@dc.ColumnName</th>
+                }
+                else
+                {
+                    if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "mixing")
+                    {
+                        <th>@Html.ActionLink(dc.ColumnName, ViewContext.RouteData.Values["action"].ToString(), "Home", new { orderby = dc.ColumnName }, null)</th>
+                    }
+                    else
+                    {
+                        <th>@Html.ActionLink(dc.ColumnName, ViewContext.RouteData.Values["action"].ToString(), "Home", new { q = ViewBag.q, size = ViewBag.Size, num = ViewBag.Num, orderby = dc.ColumnName }, null)</th>
+                    }
+
+                }
+
+
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (DataRow dr in ViewBag.Data.Rows)
+        {
+            <tr>
+                @foreach (Object dc in dr.ItemArray)
+                {
+                    <td>@dc</td>
+                }
+            </tr>
+        }
+    </tbody>
+
+    @if (ViewContext.RouteData.Values["action"].ToString().ToLower() == "pagination" || ViewContext.RouteData.Values["action"].ToString().ToLower() == "mixing")
+    {
+        <tfoot>
+            <tr>
+                <th colspan="@colspan">
+                    @for (var i = 0; i < Math.Ceiling((double)ViewBag.Total / ViewBag.Size); i++)
+                    {
+                        if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "mixing")
+                        {
+                            @Html.ActionLink((i + 1).ToString(), ViewContext.RouteData.Values["action"].ToString(), "Home", new { size = ViewBag.Size, num = i * ViewBag.Size }, null)
+                        }
+                        else
+                        {
+                            @Html.ActionLink((i + 1).ToString(), ViewContext.RouteData.Values["action"].ToString(), "Home", new { q = ViewBag.q, size = ViewBag.Size, num = i * ViewBag.Size, orderby = ViewBag.OrderBy }, null)
+                        }
+                    }
+                </th>
+            </tr>
+        </tfoot>
+    }
+</table>
