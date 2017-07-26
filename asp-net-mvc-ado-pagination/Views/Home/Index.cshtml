@@ -4,13 +4,17 @@
     ViewBag.Title = "Index";
 }
 
-@if (ViewContext.RouteData.Values["action"].ToString().ToLower() == "filter" || ViewContext.RouteData.Values["action"].ToString().ToLower() == "mixing")
+@if (GetAction() == "Filter" || GetAction() == "Mixing")
 {
     <p>
-        @using (Html.BeginForm(ViewContext.RouteData.Values["action"].ToString(), "Home", FormMethod.Get))
+        @using (Html.BeginForm(GetAction(), "Home", FormMethod.Get))
         {
-            <input type="text" name="q" value="@ViewBag.q" />
-            if (ViewContext.RouteData.Values["action"].ToString().ToLower() == "mixing")
+            @SearchForm("ProductName", ViewBag.ProductName)
+            @SearchForm("SupplierID", ViewBag.SupplierID)
+            @SearchForm("CategoryID", ViewBag.CategoryID)
+            @SearchForm("QuantityPerUnit", ViewBag.QuantityPerUnit)
+            @SearchForm("UnitPrice", ViewBag.UnitPrice)
+            if (GetAction() == "Mixing")
             {
                 <input type="hidden" name="size" value="@ViewBag.Size" />
                 <input type="hidden" name="num" value="@ViewBag.Num" />
@@ -27,19 +31,19 @@
         <tr>
             @foreach (DataColumn dc in ViewBag.Data.Columns)
             {
-                if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "sorting" && ViewContext.RouteData.Values["action"].ToString().ToLower() != "mixing")
+                if (GetAction() != "Sorting" && GetAction() != "Mixing")
                 {
                     <th>@dc.ColumnName</th>
                 }
                 else
                 {
-                    if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "mixing")
+                    if (GetAction() != "Mixing")
                     {
-                        <th>@Html.ActionLink(dc.ColumnName, ViewContext.RouteData.Values["action"].ToString(), "Home", new { orderby = dc.ColumnName }, null)</th>
+                        <th>@Html.ActionLink(dc.ColumnName, GetAction(), "Home", new { orderby = dc.ColumnName }, null)</th>
                     }
                     else
                     {
-                        <th>@Html.ActionLink(dc.ColumnName, ViewContext.RouteData.Values["action"].ToString(), "Home", new { q = ViewBag.q, size = ViewBag.Size, num = ViewBag.Num, orderby = dc.ColumnName }, null)</th>
+                        <th>@Html.ActionLink(dc.ColumnName, GetAction(), "Home", new { ProductName = ViewBag.ProductName, SupplierID = ViewBag.SupplierID, CategoryID = ViewBag.CategoryID, QuantityPerUnit = ViewBag.QuantityPerUnit, UnitPrice = ViewBag.UnitPrice, size = ViewBag.Size, num = ViewBag.Num, orderby = dc.ColumnName }, null)</th>
                     }
 
                 }
@@ -60,20 +64,20 @@
         }
     </tbody>
 
-    @if (ViewContext.RouteData.Values["action"].ToString().ToLower() == "pagination" || ViewContext.RouteData.Values["action"].ToString().ToLower() == "mixing")
+    @if (GetAction() == "Pagination" || GetAction() == "Mixing")
     {
         <tfoot>
             <tr>
                 <th colspan="@colspan">
                     @for (var i = 0; i < Math.Ceiling((double)ViewBag.Total / ViewBag.Size); i++)
                     {
-                        if (ViewContext.RouteData.Values["action"].ToString().ToLower() != "mixing")
+                        if (GetAction() != "Mixing")
                         {
-                            @Html.ActionLink((i + 1).ToString(), ViewContext.RouteData.Values["action"].ToString(), "Home", new { size = ViewBag.Size, num = i * ViewBag.Size }, null)
+                            @Html.ActionLink((i + 1).ToString(), GetAction(), "Home", new { size = ViewBag.Size, num = i * ViewBag.Size }, null)
                         }
                         else
                         {
-                            @Html.ActionLink((i + 1).ToString(), ViewContext.RouteData.Values["action"].ToString(), "Home", new { q = ViewBag.q, size = ViewBag.Size, num = i * ViewBag.Size, orderby = ViewBag.OrderBy }, null)
+                            @Html.ActionLink((i + 1).ToString(), GetAction(), "Home", new { ProductName = ViewBag.ProductName, SupplierID = ViewBag.SupplierID, CategoryID = ViewBag.CategoryID, QuantityPerUnit = ViewBag.QuantityPerUnit, UnitPrice = ViewBag.UnitPrice, size = ViewBag.Size, num = i * ViewBag.Size, orderby = ViewBag.OrderBy }, null)
                         }
                     }
                 </th>
@@ -81,3 +85,18 @@
         </tfoot>
     }
 </table>
+
+
+
+
+@helper SearchForm(string name, string value)
+{
+    <span>@name</span>
+    <input type="text" name="@name" value="@value" />
+}
+
+@functions {
+    public string GetAction() { 
+        return ViewContext.RouteData.Values["action"].ToString();
+    }
+}

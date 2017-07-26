@@ -20,12 +20,36 @@ namespace asp_net_mvc_ado_pagination.Controllers
             return View();
         }
 
-        public ActionResult Filter(string q = "")
+        public ActionResult Filter(string ProductName = "", string SupplierID = "", string CategoryID = "", string QuantityPerUnit = "", string UnitPrice = "")
         {
             StringBuilder sb = new StringBuilder();
-            DataTable Data = dm.Query(sb.AppendFormat("select * from products where ProductName like '%{0}%'", q).ToString());
+            sb.Append("select * from products where 1=1");
+            if (!string.IsNullOrEmpty(ProductName)) {
+                sb.AppendFormat(" and ProductName like '{0}'", ProductName);
+            }
+            if (!string.IsNullOrEmpty(SupplierID))
+            {
+                sb.AppendFormat(" and SupplierID like '{0}'", SupplierID);
+            }
+            if (!string.IsNullOrEmpty(CategoryID))
+            {
+                sb.AppendFormat(" and CategoryID like '{0}'", CategoryID);
+            }
+            if (!string.IsNullOrEmpty(QuantityPerUnit))
+            {
+                sb.AppendFormat(" and QuantityPerUnit like '{0}'", QuantityPerUnit);
+            }
+            if (!string.IsNullOrEmpty(UnitPrice))
+            {
+                sb.AppendFormat(" and UnitPrice like '{0}'", UnitPrice);
+            }
+            DataTable Data = dm.Query(sb.ToString());
             ViewBag.Data = Data;
-            ViewBag.q = q;
+            ViewBag.ProductName = ProductName;
+            ViewBag.SupplierID = SupplierID;
+            ViewBag.CategoryID = CategoryID;
+            ViewBag.QuantityPerUnit = QuantityPerUnit;
+            ViewBag.UnitPrice = UnitPrice;
             return View("Index");
         }
 
@@ -49,12 +73,28 @@ namespace asp_net_mvc_ado_pagination.Controllers
             return View("Index");
         }
 
-        public ActionResult Mixing(string q = "", int size = 10, int num = 0, string orderby = "ProductID")
+        public ActionResult Mixing(string ProductName = "", string SupplierID = "", string CategoryID = "", string QuantityPerUnit = "", string UnitPrice = "", int size = 10, int num = 0, string orderby = "ProductID")
         {
             StringBuilder where = new StringBuilder();
-            if (!string.IsNullOrEmpty(q))
+            if (!string.IsNullOrEmpty(ProductName))
             {
-                where.AppendFormat(" and ProductName like '%{0}%'", q);
+                where.AppendFormat(" and ProductName like '%{0}%'", ProductName);
+            }
+            if (!string.IsNullOrEmpty(SupplierID))
+            {
+                where.AppendFormat(" and SupplierID like '{0}'", SupplierID);
+            }
+            if (!string.IsNullOrEmpty(CategoryID))
+            {
+                where.AppendFormat(" and CategoryID like '{0}'", CategoryID);
+            }
+            if (!string.IsNullOrEmpty(QuantityPerUnit))
+            {
+                where.AppendFormat(" and QuantityPerUnit like '{0}'", QuantityPerUnit);
+            }
+            if (!string.IsNullOrEmpty(UnitPrice))
+            {
+                where.AppendFormat(" and UnitPrice like '{0}'", UnitPrice);
             }
 
             StringBuilder order = new StringBuilder();
@@ -70,7 +110,11 @@ namespace asp_net_mvc_ado_pagination.Controllers
             int Total = (int)dm.Query("select count(*) from products where 1=1" + where).Rows[0][0];
             DataTable Data = dm.Query(sb.ToString());
 
-            ViewBag.q = q;
+            ViewBag.ProductName = ProductName;
+            ViewBag.SupplierID = SupplierID;
+            ViewBag.CategoryID = CategoryID;
+            ViewBag.QuantityPerUnit = QuantityPerUnit;
+            ViewBag.UnitPrice = UnitPrice;
             ViewBag.Data = Data;
             ViewBag.Size = size;
             ViewBag.Num = num;
